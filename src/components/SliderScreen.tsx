@@ -14,13 +14,13 @@ const SliderScreen: React.FC = observer(() => {
     ) => void;
   }>();
 
-  // Функція для зміни бойових патронів
+  // Функція для зміни бойових патроні
   const handleCombatAmmoChange = (value: number) => {
     ammoStore.setBattleAmmo(value);
     ammoStore.setBlankAmmo(8 - value);
   };
 
-  // Функція для зміни холостих патронів
+  // Функція для зміни холостих патроні
   const handleBlankAmmoChange = (value: number) => {
     ammoStore.setBlankAmmo(value);
     ammoStore.setBattleAmmo(8 - value);
