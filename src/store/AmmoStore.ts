@@ -57,22 +57,16 @@ class AmmoStore {
     this.shotCount = 1;
   }
 
-  // імовірність наступного пострілу
+  // Імовірність наступного бойового пострілу
   get battleChance() {
-    const totalShots = this.shots.length;
-    const battleShots = this.shots.filter((shot) =>
-      shot.includes("Бойовий")
-    ).length;
-    return totalShots > 0 ? (battleShots / totalShots) * 100 : 50;
+    const totalAmmo = this.battleAmmo + this.blankAmmo; // загальний залишок патронів
+    return totalAmmo > 0 ? (this.battleAmmo / totalAmmo) * 100 : 0;
   }
 
-  // імовірність наступного пострілу
+  // Імовірність наступного холостого пострілу
   get blankChance() {
-    const totalShots = this.shots.length;
-    const blankShots = this.shots.filter((shot) =>
-      shot.includes("Холостий")
-    ).length;
-    return totalShots > 0 ? (blankShots / totalShots) * 100 : 50;
+    const totalAmmo = this.battleAmmo + this.blankAmmo; // загальний залишок патронів
+    return totalAmmo > 0 ? (this.blankAmmo / totalAmmo) * 100 : 0;
   }
 }
 
