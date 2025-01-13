@@ -1,28 +1,26 @@
 import React, { useState } from "react";
 import { View, Text, Button, Alert } from "react-native";
 import { observer } from "mobx-react-lite";
-import ammoStore from "../store/AmmoStore";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../types";
-import ModalWindow from "../Modal Window/ModalWindow";
+import gameStore from "../store/GameStore";
+import ModalWindow from "../ModalWindow/ModalWindow";
+import { GameScreenProps } from "../../types";
 
-const GameScreen: React.FC = observer(() => {
+const GameScreen: React.FC<GameScreenProps> = observer(({ navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedHint, setSelectedHint] = useState<string | null>(null);
   const [usedHints, setUsedHints] = useState<string[]>([]);
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const confirmReset = (confirmation: boolean) => {
     if (confirmation) {
-      ammoStore.resetAmmo(1, 1);
+      gameStore.resetAmmo(1, 1);
       navigation.reset({
         index: 0,
         routes: [
           {
             name: "SliderScreen",
             params: {
-              combatAmmo: ammoStore.battleAmmo,
-              blankAmmo: ammoStore.blankAmmo,
+              combatAmmo: gameStore.battleAmmo,
+              blankAmmo: gameStore.blankAmmo,
             },
           },
         ],
@@ -58,23 +56,23 @@ const GameScreen: React.FC = observer(() => {
 
   return (
     <View>
-      <Text>Бойові патрони: {ammoStore.battleAmmo}</Text>
-      <Text>Холості патрони: {ammoStore.blankAmmo}</Text>
+      <Text>Бойові патрони: {gameStore.battleAmmo}</Text>
+      <Text>Холості патрони: {gameStore.blankAmmo}</Text>
 
       <Button
         title="Стріляти бойовим"
-        onPress={() => ammoStore.shootBattle()}
+        onPress={() => gameStore.shootBattle()}
       />
       <Button
         title="Стріляти холостим"
-        onPress={() => ammoStore.shootBlank()}
+        onPress={() => gameStore.shootBlank()}
       />
 
-      <Text>Ймовірність бойового: {ammoStore.battleChance.toFixed(2)}%</Text>
-      <Text>Ймовірність холостого: {ammoStore.blankChance.toFixed(2)}%</Text>
+      <Text>Ймовірність бойового: {gameStore.battleChance.toFixed(2)}%</Text>
+      <Text>Ймовірність холостого: {gameStore.blankChance.toFixed(2)}%</Text>
 
       <Text>Історія пострілів:</Text>
-      {ammoStore.shots.map((shot, index) => (
+      {gameStore.shots.map((shot, index) => (
         <Text key={index}>{shot}</Text>
       ))}
 

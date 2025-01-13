@@ -1,8 +1,8 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import SliderScreen from "./src/components/SliderScreen";
-import GameScreen from "./src/components/GameScreen";
+import SliderScreen from "./src/Screens/SliderScreen";
+import GameScreen from "./src/Screens/GameScreen";
 import { RootStackParamList } from "./types";
 
 const Stack = createStackNavigator<RootStackParamList>();

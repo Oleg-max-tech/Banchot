@@ -1,40 +1,30 @@
-import { makeAutoObservable, action } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
-class AmmoStore {
-  battleAmmo: number = 1;
-  blankAmmo: number = 1;
-  shots: string[] = [];
-  shotCount: number = 1;
+class GameStore {
+  @observable battleAmmo: number = 1;
+  @observable blankAmmo: number = 1;
+  @observable shots: string[] = [];
+  @observable shotCount: number = 1;
 
   constructor() {
-    makeAutoObservable(this, {
-      setBattleAmmo: action,
-      setBlankAmmo: action,
-      shootBattle: action,
-      shootBlank: action,
-      resetAmmo: action,
-    });
+    makeObservable(this);
   }
 
-  setBattleAmmo(value: number) {
+  @action setBattleAmmo(value: number) {
     const totalAmmo = value + this.blankAmmo;
-    if (totalAmmo <= 9) {
+    if (totalAmmo <= 16) {
       this.battleAmmo = value;
-    } else {
-      this.battleAmmo = 9 - this.blankAmmo;
     }
   }
 
-  setBlankAmmo(value: number) {
+  @action setBlankAmmo(value: number) {
     const totalAmmo = value + this.battleAmmo;
-    if (totalAmmo <= 9) {
+    if (totalAmmo <= 16) {
       this.blankAmmo = value;
-    } else {
-      this.blankAmmo = 9 - this.battleAmmo;
     }
   }
 
-  shootBattle() {
+  @action shootBattle() {
     if (this.battleAmmo > 0) {
       this.battleAmmo--;
       this.shots.push(`${this.shotCount} - Бойовий`);
@@ -42,7 +32,7 @@ class AmmoStore {
     }
   }
 
-  shootBlank() {
+  @action shootBlank() {
     if (this.blankAmmo > 0) {
       this.blankAmmo--;
       this.shots.push(`${this.shotCount} - Холостий`);
@@ -50,7 +40,7 @@ class AmmoStore {
     }
   }
 
-  resetAmmo(battle: number, blank: number) {
+  @action resetAmmo(battle: number, blank: number) {
     this.battleAmmo = battle;
     this.blankAmmo = blank;
     this.shots = [];
@@ -70,5 +60,5 @@ class AmmoStore {
   }
 }
 
-const ammoStore = new AmmoStore();
-export default ammoStore;
+const gameStore = new GameStore();
+export default gameStore;
