@@ -1,102 +1,108 @@
 import React, { useState } from "react";
-import { View, Text, Button, Alert } from "react-native";
+import { View, Text, Button, Alert, ScrollView, Image } from "react-native";
 import { observer } from "mobx-react-lite";
 import gameStore from "../store/GameStore";
-import ModalWindow from "../ModalWindow/ModalWindow";
 import { GameScreenProps } from "../../types";
+import { useTheme } from "../Styles/ThemeContext";
+import { useGameScreenStyles } from "../Styles/useGameScreenStyles";
 
-const GameScreen: React.FC<GameScreenProps> = observer(({ navigation }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedHint, setSelectedHint] = useState<string | null>(null);
-  const [usedHints, setUsedHints] = useState<string[]>([]);
-
-  const confirmReset = (confirmation: boolean) => {
-    if (confirmation) {
-      gameStore.resetAmmo(1, 1);
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "SliderScreen",
-            params: {
-              combatAmmo: gameStore.battleAmmo,
-              blankAmmo: gameStore.blankAmmo,
-            },
-          },
-        ],
-      });
-    }
-    setIsModalVisible(false);
-  };
-
-  const showResetAlert = () => {
-    Alert.alert(
-      "Підтвердження",
-      "Ви справді хочете завершити гру?",
-      [
-        {
-          text: "Ні",
-          onPress: () => confirmReset(false),
-          style: "cancel",
-        },
-        {
-          text: "Так",
-          onPress: () => confirmReset(true),
-        },
-      ],
-      { cancelable: true }
+const GameScreen: React.FC<GameScreenProps> = observer(
+  ({ navigation, route }) => {
+    const { theme } = useTheme();
+    const [selectedHint, setSelectedHint] = useState<string | null>(
+      route.params?.selectedHint || null
     );
-  };
+    const [usedHints, setUsedHints] = useState<string[]>([]);
 
-  const addHint = (hint: string) => {
-    setUsedHints((prevHints) => [...prevHints, hint]);
-    Alert.alert("Підказка", `Ви використали: ${hint}`);
-    setSelectedHint(null);
-  };
+    const addHint = (hint: string) => {
+      if (!usedHints.includes(hint)) {
+        setUsedHints((prevHints) => [...prevHints, hint]);
+        Alert.alert("Підказка", `Ви використали: ${hint}`);
+      } else {
+        Alert.alert("Увага", `Ви вже використали підказку: ${hint}`);
+      }
+      setSelectedHint(null);
+    };
 
-  return (
-    <View>
-      <Text>Бойові патрони: {gameStore.battleAmmo}</Text>
-      <Text>Холості патрони: {gameStore.blankAmmo}</Text>
+    // Отримуємо стилі за допомогою useGameScreenStyles
+    const styles = useGameScreenStyles(theme);
 
-      <Button
-        title="Стріляти бойовим"
-        onPress={() => gameStore.shootBattle()}
-      />
-      <Button
-        title="Стріляти холостим"
-        onPress={() => gameStore.shootBlank()}
-      />
+    return (
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Відображення бойових патронів */}
+        <Text style={styles.ammoHeader}>Бойові патрони:</Text>
+        <View style={styles.ammoList}>
+          {Array.from({ length: gameStore.battleAmmo }).map((_, index) => (
+            <Image
+              key={`battle-${index}`}
+              source={require("../../assets/battle.png")}
+              style={styles.ammoImage}
+            />
+          ))}
+        </View>
 
-      <Text>Ймовірність бойового: {gameStore.battleChance.toFixed(2)}%</Text>
-      <Text>Ймовірність холостого: {gameStore.blankChance.toFixed(2)}%</Text>
+        {/* Відображення холостих патронів */}
+        <Text style={styles.ammoHeader}>Холості патрони:</Text>
+        <View style={styles.ammoList}>
+          {Array.from({ length: gameStore.blankAmmo }).map((_, index) => (
+            <Image
+              key={`blank-${index}`}
+              source={require("../../assets/blank.png")}
+              style={styles.ammoImage}
+            />
+          ))}
+        </View>
 
-      <Text>Історія пострілів:</Text>
-      {gameStore.shots.map((shot, index) => (
-        <Text key={index}>{shot}</Text>
-      ))}
+        <Button
+          title="Стріляти бойовим"
+          onPress={() => gameStore.shootBattle()}
+        />
+        <Button
+          title="Стріляти холостим"
+          onPress={() => gameStore.shootBlank()}
+        />
 
-      <Button title="Скинути гру" onPress={showResetAlert} />
+        <Text style={styles.probabilityText}>
+          Ймовірність бойового: {gameStore.battleChance.toFixed(2)}%
+        </Text>
+        <Text style={styles.probabilityText}>
+          Ймовірність холостого: {gameStore.blankChance.toFixed(2)}%
+        </Text>
 
-      <Button
-        title="Показати підказки"
-        onPress={() => setIsModalVisible(true)}
-      />
+        <Text style={styles.historyHeader}>Історія пострілів:</Text>
+        {gameStore.shots.map((shot, index) => (
+          <Text key={index} style={styles.shotText}>
+            {shot}
+          </Text>
+        ))}
 
-      <ModalWindow
-        isVisible={isModalVisible}
-        selectedHint={selectedHint}
-        onClose={() => setIsModalVisible(false)}
-        onUseHint={addHint}
-        onSelectHint={setSelectedHint}
-      />
+        {/* Відображення вибраної підказки */}
+        {selectedHint && (
+          <Text style={styles.selectedHint}>
+            Вибрана підказка: {selectedHint}
+          </Text>
+        )}
 
-      <Text>Використані підказки:</Text>
-      {usedHints.map((hint, index) => (
-        <Text key={index}>{hint}</Text>
-      ))}
-    </View>
-  );
-});
+        {/* Історія використаних підказок */}
+        <Text style={styles.historyHeader}>Історія підказок:</Text>
+        {usedHints.map((hint, index) => (
+          <Text key={index} style={styles.shotText}>
+            {hint}
+          </Text>
+        ))}
+
+        <Button
+          title="Показати підказки"
+          onPress={() =>
+            navigation.navigate("HintsScreen", {
+              selectedHint: selectedHint,
+              onUseHint: addHint,
+            })
+          }
+        />
+      </ScrollView>
+    );
+  }
+);
 
 export default GameScreen;

@@ -1,4 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
+import * as Haptics from "expo-haptics";
 
 class GameStore {
   @observable battleAmmo: number = 1;
@@ -29,6 +30,9 @@ class GameStore {
       this.battleAmmo--;
       this.shots.push(`${this.shotCount} - Бойовий`);
       this.shotCount++;
+
+      //Сильна вібрація
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
   }
 
@@ -37,6 +41,9 @@ class GameStore {
       this.blankAmmo--;
       this.shots.push(`${this.shotCount} - Холостий`);
       this.shotCount++;
+
+      //Сильна вібрація
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
   }
 
@@ -49,13 +56,13 @@ class GameStore {
 
   // Імовірність наступного бойового пострілу
   get battleChance() {
-    const totalAmmo = this.battleAmmo + this.blankAmmo; // загальний залишок патронів
+    const totalAmmo = this.battleAmmo + this.blankAmmo;
     return totalAmmo > 0 ? (this.battleAmmo / totalAmmo) * 100 : 0;
   }
 
   // Імовірність наступного холостого пострілу
   get blankChance() {
-    const totalAmmo = this.battleAmmo + this.blankAmmo; // загальний залишок патронів
+    const totalAmmo = this.battleAmmo + this.blankAmmo;
     return totalAmmo > 0 ? (this.blankAmmo / totalAmmo) * 100 : 0;
   }
 }
