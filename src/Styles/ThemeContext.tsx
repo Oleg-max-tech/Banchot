@@ -6,11 +6,15 @@ import { UnistylesProvider } from "react-native-unistyles";
 export const lightTheme = {
   backgroundColor: "#ffffff",
   textColor: "#000000",
+  headerBackground: "#f4f4f4",
+  headerText: "#000000",
 };
 
 export const darkTheme = {
   backgroundColor: "#333333",
   textColor: "#ffffff",
+  headerBackground: "#444444",
+  headerText: "#ffffff",
 };
 
 interface ThemeContextProps {
