@@ -10,76 +10,42 @@ interface HintsScreenStyles {
   hintButtonText: object;
 }
 
-export const useHintsScreenStyles = (theme: Theme): HintsScreenStyles => {
-  // Використовуємо createStyleSheet замість звичайного об'єкта стилів
+export const useHintsScreenStyles = (): HintsScreenStyles => {
   return createStyleSheet({
     container: {
       flex: 1,
-      justifyContent: "flex-start",
+      backgroundColor: "#ffffff",
       padding: 20,
-      backgroundColor: theme.backgroundColor,
     },
     title: {
-      fontSize: 22,
-      fontWeight: "bold",
+      fontSize: 24,
+      color: "#000000",
       marginBottom: 20,
-      color: theme.textColor,
     },
     hintContainer: {
-      backgroundColor: theme.cardBackground,
+      marginBottom: 20,
       padding: 15,
-      borderRadius: 10,
-      marginBottom: 15,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      elevation: 5,
+      backgroundColor: "#f4f4f4",
+      borderRadius: 8,
     },
     hintName: {
       fontSize: 18,
+      color: "#333333",
       fontWeight: "bold",
-      marginBottom: 10,
-      color: theme.textColor,
     },
     hintDescription: {
       fontSize: 16,
-      marginBottom: 15,
-      color: theme.textColor,
+      color: "#555555",
+      marginBottom: 10,
     },
     hintButton: {
-      backgroundColor: theme.buttonBackground,
+      backgroundColor: "#007bff",
       padding: 10,
       borderRadius: 5,
-      alignItems: "center",
     },
     hintButtonText: {
-      color: theme.buttonTextColor,
-      fontSize: 16,
+      color: "#ffffff",
+      textAlign: "center",
     },
   });
-};
-
-export interface Theme {
-  backgroundColor: string;
-  textColor: string;
-  cardBackground: string;
-  buttonBackground: string;
-  buttonTextColor: string;
-}
-
-export const lightTheme: Theme = {
-  backgroundColor: "#f5f5f5",
-  textColor: "#000",
-  cardBackground: "#fff",
-  buttonBackground: "#007BFF",
-  buttonTextColor: "#fff",
-};
-
-export const darkTheme: Theme = {
-  backgroundColor: "#333",
-  textColor: "#fff",
-  cardBackground: "#444",
-  buttonBackground: "#1E90FF",
-  buttonTextColor: "#fff",
 };

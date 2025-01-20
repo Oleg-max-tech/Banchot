@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, Text, Button, TouchableOpacity, ScrollView } from "react-native";
 import { observer } from "mobx-react-lite";
 import { HintsScreenProps } from "../../types";
-import { useTheme } from "../Styles/ThemeContext";
 import { useHintsScreenStyles } from "../Styles/useHintScreenStyles";
 
 const hints = [
@@ -38,7 +37,6 @@ const hints = [
 ];
 
 const HintsScreen: React.FC<HintsScreenProps> = ({ navigation, route }) => {
-  const { theme } = useTheme();
   const { onUseHint } = route.params;
 
   const handleUseHint = (hintName: string) => {
@@ -48,7 +46,7 @@ const HintsScreen: React.FC<HintsScreenProps> = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  const styles = useHintsScreenStyles(theme);
+  const styles = useHintsScreenStyles();
 
   return (
     <ScrollView>

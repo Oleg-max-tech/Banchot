@@ -1,16 +1,12 @@
-// src/screens/SliderScreen.tsx
 import React from "react";
 import { View, Text, Button, ScrollView, Image } from "react-native";
 import Slider from "@react-native-community/slider";
 import { observer } from "mobx-react-lite";
 import gameStore from "../store/GameStore";
 import { SliderScreenProps } from "../../types";
-import { useTheme } from "../Styles/ThemeContext";
 import { useSliderScreenStyles } from "../Styles/useSliderScreenStyles";
 
 const SliderScreen: React.FC<SliderScreenProps> = observer(({ navigation }) => {
-  const { theme } = useTheme();
-
   // Зміна кількості бойових патронів
   const handleCombatAmmoChange = (value: number) => {
     gameStore.setBattleAmmo(value);
@@ -30,8 +26,8 @@ const SliderScreen: React.FC<SliderScreenProps> = observer(({ navigation }) => {
     });
   };
 
-  // Використовуємо стилі з нашої функції
-  const styles = useSliderScreenStyles(theme);
+  // Використовуємо стилі без теми
+  const styles = useSliderScreenStyles();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

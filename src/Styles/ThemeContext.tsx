@@ -1,28 +1,28 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { UnistylesProvider } from "react-native-unistyles";
 
-// Інтерфейс для теми
-export interface Theme {
-  backgroundColor: string;
-  textColor: string;
-  headerBackground: string;
-  headerText: string;
-  cardBackground: string;
-  buttonBackground: string;
-  buttonTextColor: string;
-}
+// Визначення тем
+export const lightTheme = {
+  backgroundColor: "#ffffff",
+  textColor: "#000000",
+};
 
-const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
+export const darkTheme = {
+  backgroundColor: "#333333",
+  textColor: "#ffffff",
+};
 
 interface ThemeContextProps {
-  isDarkMode: boolean;
+  theme: typeof lightTheme | typeof darkTheme;
   toggleTheme: () => void;
-  theme: Theme;
 }
 
 interface ThemeProviderProps {
   children: React.ReactNode;
 }
+
+const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
@@ -53,32 +53,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     });
   };
 
-  const theme = isDarkMode ? darkTheme : lightTheme;
+  const theme = isDarkMode ? darkTheme : lightTheme; // Вибір теми
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme, theme }}>
-      {children}
-    </ThemeContext.Provider>
+    <UnistylesProvider>
+      <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        {children}
+      </ThemeContext.Provider>
+    </UnistylesProvider>
   );
-};
-
-// Опис тем
-export const lightTheme: Theme = {
-  backgroundColor: "#fff",
-  textColor: "#000",
-  headerBackground: "#f8f9fa",
-  headerText: "#000",
-  cardBackground: "#fff",
-  buttonBackground: "#007BFF",
-  buttonTextColor: "#fff",
-};
-
-export const darkTheme: Theme = {
-  backgroundColor: "#333",
-  textColor: "#fff",
-  headerBackground: "#1F1F1F",
-  headerText: "#fff",
-  cardBackground: "#444",
-  buttonBackground: "#1E90FF",
-  buttonTextColor: "#fff",
 };

@@ -1,5 +1,4 @@
 import { createStyleSheet } from "react-native-unistyles";
-import { Theme } from "./ThemeContext";
 
 interface GameScreenStyles {
   container: object;
@@ -12,20 +11,19 @@ interface GameScreenStyles {
   selectedHint: object;
 }
 
-export const useGameScreenStyles = (theme: Theme): GameScreenStyles => {
-  // Використовуємо createStyleSheet замість StyleSheet.create
+export const useGameScreenStyles = (): GameScreenStyles => {
   const stylesheet = createStyleSheet({
     container: {
       padding: 20,
       flexGrow: 1,
       justifyContent: "flex-start",
-      backgroundColor: theme.backgroundColor,
+      backgroundColor: "backgroundColor",
     },
     ammoHeader: {
       fontSize: 18,
       fontWeight: "bold",
       marginVertical: 10,
-      color: theme.textColor,
+      color: "textColor",
     },
     ammoList: {
       flexDirection: "row",
@@ -40,23 +38,23 @@ export const useGameScreenStyles = (theme: Theme): GameScreenStyles => {
     probabilityText: {
       fontSize: 16,
       marginBottom: 10,
-      color: theme.textColor,
+      color: "textColor",
     },
     historyHeader: {
       fontSize: 18,
       fontWeight: "bold",
       marginVertical: 10,
-      color: theme.textColor,
+      color: "textColor",
     },
     shotText: {
       fontSize: 14,
-      color: theme.textColor,
+      color: "textColor",
     },
     selectedHint: {
       fontSize: 16,
       fontWeight: "bold",
       marginVertical: 10,
-      color: theme.textColor,
+      color: "textColor",
     },
   });
 

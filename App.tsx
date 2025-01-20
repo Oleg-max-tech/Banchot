@@ -6,14 +6,28 @@ import GameScreen from "./src/Screens/GameScreen";
 import HintsScreen from "./src/components/HintsScreen";
 import { RootStackParamList } from "./types";
 import CustomHeader from "./src/CustomHeader";
-import { useTheme, ThemeProvider } from "./src/Styles/ThemeContext";
 import { SafeAreaView, StyleSheet } from "react-native";
 import "react-native-unistyles";
+
+// Визначення тем
+export const lightTheme = {
+  backgroundColor: "#ffffff",
+  textColor: "#000000",
+  headerBackground: "#f4f4f4",
+  headerText: "#000000",
+};
+
+export const darkTheme = {
+  backgroundColor: "#333333",
+  textColor: "#ffffff",
+  headerBackground: "#444444",
+  headerText: "#ffffff",
+};
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AppContent: React.FC = () => {
-  const { theme } = useTheme();
+  const theme = lightTheme;
 
   return (
     <SafeAreaView
@@ -61,13 +75,8 @@ const AppContent: React.FC = () => {
   );
 };
 
-// Обгортаємо NavigationContainer і AppContent в ThemeProvider, щоб забезпечити доступ до теми
 const App: React.FC = () => {
-  return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
-  );
+  return <AppContent />;
 };
 
 const styles = StyleSheet.create({

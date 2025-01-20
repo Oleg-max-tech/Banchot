@@ -1,6 +1,4 @@
-
 import { createStyleSheet } from "react-native-unistyles";
-import { Theme } from "./ThemeContext";
 
 interface SliderScreenStyles {
   container: object;
@@ -11,16 +9,16 @@ interface SliderScreenStyles {
   ammoImage: object;
 }
 
-export const useSliderScreenStyles = (theme: Theme): SliderScreenStyles => {
-  // Використовуємо createStyleSheet замість звичайного об'єкта стилів
+export const useSliderScreenStyles = (): SliderScreenStyles => {
   return createStyleSheet({
     container: {
+      flex: 1,
+      backgroundColor: "#ffffff",
       padding: 20,
-      backgroundColor: theme.backgroundColor,
     },
     ammoHeader: {
-      fontSize: 20,
-      fontWeight: "bold",
+      fontSize: 18,
+      color: "#000000",
       marginBottom: 10,
     },
     slider: {
@@ -30,19 +28,16 @@ export const useSliderScreenStyles = (theme: Theme): SliderScreenStyles => {
     },
     valueText: {
       fontSize: 16,
-      marginBottom: 20,
-      color: theme.textColor,
+      color: "#000000",
     },
     ammoList: {
       flexDirection: "row",
       flexWrap: "wrap",
-      justifyContent: "flex-start",
       marginBottom: 20,
-      backgroundColor: theme.backgroundColor,
     },
     ammoImage: {
-      width: 30,
-      height: 30,
+      width: 40,
+      height: 40,
       margin: 5,
     },
   });
