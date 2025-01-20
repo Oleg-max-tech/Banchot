@@ -5,7 +5,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ParamListBase } from "@react-navigation/native";
 import gameStore from "./store/GameStore";
 import { RootStackParamList } from "../types";
-import { useTheme } from "./Styles/ThemeContext";
+import { useAppTheme } from "./Styles/ThemeContext"; // Використовуємо useAppTheme
 import { createStyleSheet } from "react-native-unistyles";
 
 interface CustomHeaderProps<T extends ParamListBase> {
@@ -13,8 +13,8 @@ interface CustomHeaderProps<T extends ParamListBase> {
 }
 
 const CustomHeader = ({ navigation }: CustomHeaderProps<any>) => {
-  const { theme, toggleTheme } = useTheme();
-  const { backgroundColor, textColor } = theme;
+  const { themeStyles, switchTheme } = useAppTheme(); // Отримуємо дані через useAppTheme
+  const { backgroundColor, textColor } = themeStyles;
 
   const confirmReset = (shouldReset: boolean) => {
     if (shouldReset) {
@@ -80,7 +80,7 @@ const CustomHeader = ({ navigation }: CustomHeaderProps<any>) => {
           <Ionicons name="reload" size={24} color={textColor} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={toggleTheme} style={styles.iconContainer}>
+        <TouchableOpacity onPress={switchTheme} style={styles.iconContainer}>
           <Ionicons
             name={textColor === "#ffffff" ? "sunny" : "moon"}
             size={24}

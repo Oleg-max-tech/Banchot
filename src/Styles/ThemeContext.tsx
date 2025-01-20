@@ -17,53 +17,62 @@ export const darkTheme = {
   headerText: "#ffffff",
 };
 
-interface ThemeContextProps {
-  theme: typeof lightTheme | typeof darkTheme;
-  toggleTheme: () => void;
+// Оголошення типів
+interface AppThemeContextProps {
+  themeStyles: typeof lightTheme | typeof darkTheme;
+  switchTheme: () => void;
 }
 
-interface ThemeProviderProps {
+interface AppThemeProviderProps {
   children: React.ReactNode;
 }
 
-const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
+const AppThemeContext = createContext<AppThemeContextProps | undefined>(
+  undefined
+);
 
-export const useTheme = () => {
-  const context = useContext(ThemeContext);
+// Експортуємо useAppTheme
+export const useAppTheme = () => {
+  const context = useContext(AppThemeContext);
   if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    throw new Error("useAppTheme must be used within an AppThemeProvider");
   }
   return context;
 };
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
+  children,
+}) => {
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const fetchTheme = async () => {
-      const storedTheme = await AsyncStorage.getItem("theme");
-      if (storedTheme) {
-        setIsDarkMode(storedTheme === "dark");
+    const fetchSavedTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem("theme");
+      if (savedTheme === "dark" || savedTheme === "light") {
+        setCurrentTheme(savedTheme);
       }
     };
-    fetchTheme();
+    fetchSavedTheme();
   }, []);
 
-  const toggleTheme = async () => {
-    setIsDarkMode((prevMode) => {
-      const newMode = !prevMode;
-      AsyncStorage.setItem("theme", newMode ? "dark" : "light");
-      return newMode;
+  const switchTheme = async () => {
+    setCurrentTheme((prevTheme) => {
+      const updatedTheme = prevTheme === "light" ? "dark" : "light";
+      AsyncStorage.setItem("theme", updatedTheme);
+      return updatedTheme;
     });
   };
 
-  const theme = isDarkMode ? darkTheme : lightTheme; // Вибір теми
-
   return (
     <UnistylesProvider>
-      <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      <AppThemeContext.Provider
+        value={{
+          themeStyles: currentTheme === "light" ? lightTheme : darkTheme,
+          switchTheme,
+        }}
+      >
         {children}
-      </ThemeContext.Provider>
+      </AppThemeContext.Provider>
     </UnistylesProvider>
   );
 };
