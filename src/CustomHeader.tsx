@@ -1,11 +1,10 @@
-import React from "react";
 import { View, Alert, StatusBar, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ParamListBase } from "@react-navigation/native";
 import gameStore from "./store/GameStore";
 import { RootStackParamList } from "../types";
-import { useAppTheme } from "./Styles/ThemeContext"; // Використовуємо useAppTheme
+import { useAppTheme } from "./Styles/ThemeContext";
 import { createStyleSheet } from "react-native-unistyles";
 
 interface CustomHeaderProps<T extends ParamListBase> {
@@ -13,8 +12,9 @@ interface CustomHeaderProps<T extends ParamListBase> {
 }
 
 const CustomHeader = ({ navigation }: CustomHeaderProps<any>) => {
-  const { themeStyles, switchTheme } = useAppTheme(); // Отримуємо дані через useAppTheme
-  const { backgroundColor, textColor } = themeStyles;
+  const { themeStyles, switchTheme } = useAppTheme();
+  const { backgroundColor, textColor, headerBackground, headerText } =
+    themeStyles;
 
   const confirmReset = (shouldReset: boolean) => {
     if (shouldReset) {
@@ -60,7 +60,7 @@ const CustomHeader = ({ navigation }: CustomHeaderProps<any>) => {
       alignItems: "center",
       height: 40,
       paddingHorizontal: 15,
-      backgroundColor: backgroundColor,
+      backgroundColor: headerBackground,
     },
     iconContainer: {
       marginLeft: 20,
@@ -73,18 +73,18 @@ const CustomHeader = ({ navigation }: CustomHeaderProps<any>) => {
     <>
       <StatusBar
         barStyle={textColor === "#ffffff" ? "light-content" : "dark-content"}
-        backgroundColor={backgroundColor}
+        backgroundColor={headerBackground}
       />
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={showResetAlert} style={styles.iconContainer}>
-          <Ionicons name="reload" size={24} color={textColor} />
+          <Ionicons name="reload" size={24} color={headerText} />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={switchTheme} style={styles.iconContainer}>
           <Ionicons
             name={textColor === "#ffffff" ? "sunny" : "moon"}
             size={24}
-            color={textColor}
+            color={headerText}
           />
         </TouchableOpacity>
       </View>

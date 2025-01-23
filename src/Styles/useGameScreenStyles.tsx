@@ -1,5 +1,7 @@
 import { createStyleSheet } from "react-native-unistyles";
+import { useAppTheme } from "./ThemeContext";
 
+// Типи для стилів
 interface GameScreenStyles {
   container: object;
   ammoHeader: object;
@@ -11,19 +13,38 @@ interface GameScreenStyles {
   selectedHint: object;
 }
 
+// Оновлені теми з однаковою структурою
+const lightTheme = {
+  backgroundColor: "#f4f4f4",
+  textColor: "#333333",
+};
+
+const darkTheme = {
+  backgroundColor: "#4f4f4f",
+  textColor: "#ffffff",
+};
+
 export const useGameScreenStyles = (): GameScreenStyles => {
-  const stylesheet = createStyleSheet({
+  const { themeStyles } = useAppTheme();
+
+  // Перевірка яка тема активна
+  const selectedTheme =
+    themeStyles.backgroundColor === lightTheme.backgroundColor
+      ? lightTheme
+      : darkTheme;
+
+  return createStyleSheet({
     container: {
       padding: 20,
       flexGrow: 1,
       justifyContent: "flex-start",
-      backgroundColor: "backgroundColor",
+      backgroundColor: selectedTheme.backgroundColor,
     },
     ammoHeader: {
       fontSize: 18,
       fontWeight: "bold",
       marginVertical: 10,
-      color: "textColor",
+      color: selectedTheme.textColor,
     },
     ammoList: {
       flexDirection: "row",
@@ -38,25 +59,23 @@ export const useGameScreenStyles = (): GameScreenStyles => {
     probabilityText: {
       fontSize: 16,
       marginBottom: 10,
-      color: "textColor",
+      color: selectedTheme.textColor,
     },
     historyHeader: {
       fontSize: 18,
       fontWeight: "bold",
       marginVertical: 10,
-      color: "textColor",
+      color: selectedTheme.textColor,
     },
     shotText: {
       fontSize: 14,
-      color: "textColor",
+      color: selectedTheme.textColor,
     },
     selectedHint: {
       fontSize: 16,
       fontWeight: "bold",
       marginVertical: 10,
-      color: "textColor",
+      color: selectedTheme.textColor,
     },
   });
-
-  return stylesheet;
 };

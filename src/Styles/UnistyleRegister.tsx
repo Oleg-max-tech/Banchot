@@ -1,5 +1,5 @@
 import { UnistylesRegistry } from "react-native-unistyles";
-import { lightTheme, darkTheme } from "./ThemeContext";
+import { lightTheme, darkTheme } from "./themes";
 
 // Визначення типів для брейкпоінтів та тем
 type AppBreakpoints = typeof breakpoints;
@@ -10,9 +10,9 @@ type AppThemes = {
 
 // Визначення брейкпоінтів для адаптивності
 export const breakpoints = {
-  small: { minWidth: 0 },
-  medium: { minWidth: 768 },
-  large: { minWidth: 1024 },
+  small: 0,
+  medium: 768,
+  large: 1024,
 };
 
 // Декларація модулів для типів в `react-native-unistyles`
@@ -21,8 +21,7 @@ declare module "react-native-unistyles" {
   export interface UnistylesThemes extends AppThemes {}
 }
 
-// Реєстрація брейкпоінтів та тем за допомогою об'єкта UnistylesRegistry
-export const unistyleRegistry = UnistylesRegistry.addBreakpoints(breakpoints)
+UnistylesRegistry.addBreakpoints(breakpoints)
   .addThemes({
     light: lightTheme,
     dark: darkTheme,

@@ -1,3 +1,5 @@
+import "react-native-unistyles";
+import "./src/Styles/UnistyleRegister";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -7,13 +9,14 @@ import HintsScreen from "./src/components/HintsScreen";
 import { RootStackParamList } from "./types";
 import CustomHeader from "./src/CustomHeader";
 import { SafeAreaView, StyleSheet } from "react-native";
-import "react-native-unistyles";
-import { lightTheme, darkTheme } from "./src/Styles/ThemeContext";
+import { AppThemeProvider } from "./src/Styles/ThemeContext";
+
+import { useStyles } from "react-native-unistyles";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AppContent: React.FC = () => {
-  const theme = lightTheme;
+  const { theme } = useStyles();
 
   return (
     <SafeAreaView
@@ -62,7 +65,11 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  return <AppContent />;
+  return (
+    <AppThemeProvider>
+      <AppContent />
+    </AppThemeProvider>
+  );
 };
 
 const styles = StyleSheet.create({

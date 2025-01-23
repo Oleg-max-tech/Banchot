@@ -3,12 +3,11 @@ import { View, Text, Button, Alert, ScrollView, Image } from "react-native";
 import { observer } from "mobx-react-lite";
 import gameStore from "../store/GameStore";
 import { GameScreenProps } from "../../types";
-import { useAppTheme } from "../Styles/ThemeContext"; // Замінили на правильний хук
+
 import { useGameScreenStyles } from "../Styles/useGameScreenStyles";
 
 const GameScreen: React.FC<GameScreenProps> = observer(
   ({ navigation, route }) => {
-    const { themeStyles } = useAppTheme(); // Отримуємо стиль теми з правильного хука
     const [selectedHint, setSelectedHint] = useState<string | null>(
       route.params?.selectedHint || null
     );
