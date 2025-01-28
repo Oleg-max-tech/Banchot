@@ -32,14 +32,22 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
   }, [isVisible, selectedAmmo]);
 
   const handleConfirm = () => {
-    gameStore.setBattleAmmoChoice(sliderValue, ammoType);
+    if (ammoType === "battle") {
+      gameStore.setBattleAmmoChoice(sliderValue);
+    } else {
+      gameStore.setBattleAmmoChoice(0);
+    }
+    gameStore.setShotWith100Chance(sliderValue);
     onClose();
   };
 
-  const handleAmmoTypeChange = (type: "battle" | "blank") => {
-    setAmmoType(type);
-    setSliderValue(1);
+  const handleSliderChange = (value: number) => {
+    setSliderValue(value);
+    onSliderChange(value);
   };
+
+  const availableAmmo =
+    ammoType === "battle" ? gameStore.battleAmmo : gameStore.blankAmmo;
 
   return (
     <Modal
@@ -51,9 +59,23 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Виберіть тип патрона:</Text>
+
+          <Slider
+            minimumValue={1}
+            maximumValue={availableAmmo}
+            step={1}
+            value={sliderValue}
+            onValueChange={handleSliderChange}
+            style={styles.slider}
+          />
+          <Text style={styles.modalText}>
+            Постріл № {sliderValue} -{" "}
+            {ammoType === "battle" ? "Бойовий" : "Холостий"}
+          </Text>
+
           <View style={styles.ammoTypeContainer}>
             <TouchableOpacity
-              onPress={() => handleAmmoTypeChange("battle")}
+              onPress={() => setAmmoType("battle")}
               style={[
                 styles.ammoButton,
                 ammoType === "battle" && styles.selectedButton,
@@ -62,7 +84,7 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
               <Text style={styles.ammoButtonText}>Бойовий</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => handleAmmoTypeChange("blank")}
+              onPress={() => setAmmoType("blank")}
               style={[
                 styles.ammoButton,
                 ammoType === "blank" && styles.selectedButton,
@@ -71,21 +93,7 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
               <Text style={styles.ammoButtonText}>Холостий</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.modalText}>
-            Вибір {ammoType === "battle" ? "бойового" : "холостого"} патрона
-          </Text>
-          <Slider
-            minimumValue={1}
-            maximumValue={totalAmmo}
-            step={1}
-            value={sliderValue}
-            onValueChange={(value) => {
-              setSliderValue(value);
-              onSliderChange(value);
-            }}
-            style={styles.slider}
-          />
-          <Text style={styles.modalText}>Патрон № {sliderValue}</Text>
+
           <TouchableOpacity
             onPress={handleConfirm}
             style={styles.confirmButton}

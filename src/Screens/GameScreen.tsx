@@ -22,7 +22,9 @@ const GameScreen: React.FC<GameScreenProps> = observer(
       route.params?.selectedHint || null
     );
     const [usedHints, setUsedHints] = useState<string[]>([]);
-    const [isModalVisible, setIsModalVisible] = useState(false); // Для відображення модального вікна слайдера
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [ammoType, setAmmoType] = useState<"battle" | "blank">("battle");
+    const [sliderValue, setSliderValue] = useState<number>(0);
 
     const addHint = (hint: string) => {
       if (!usedHints.includes(hint)) {
@@ -35,22 +37,28 @@ const GameScreen: React.FC<GameScreenProps> = observer(
     };
 
     const handlePhoneButton = () => {
-      // Відкриваємо слайдер
       setIsModalVisible(true);
     };
 
     const handleSliderChange = (value: number) => {
-      console.log("Slider value:", value); // Лог значення
-      gameStore.setBattleAmmoChoice(Math.round(value), "battle"); // Обираємо патрон через gameStore
+      if (ammoType === "battle" && value > gameStore.battleAmmo) {
+        value = gameStore.battleAmmo;
+      }
+      if (ammoType === "blank" && value > gameStore.blankAmmo) {
+        value = gameStore.blankAmmo;
+      }
+
+      setSliderValue(value);
+      onSliderChange(value);
+    };
+
+    const onSliderChange = (value: number) => {
+      console.log("Значення слайдера: ", value);
     };
 
     const handleConfirmSelection = () => {
-      // Використовуємо метод для зміни battleChance
-      gameStore.setBattleChance(100); // Тепер можна змінювати через метод
-      Alert.alert(
-        "Телефон",
-        `Патрон ${gameStore.battleAmmoChoice} буде бойовим!`
-      );
+      gameStore.setShotWith100Chance(gameStore.shotCount);
+      Alert.alert("Телефон", `Патрон ${gameStore.battleAmmo} буде бойовим!`);
       setIsModalVisible(false);
     };
 
@@ -84,22 +92,18 @@ const GameScreen: React.FC<GameScreenProps> = observer(
 
         <Button
           title="Стріляти бойовим"
-          onPress={() => {
-            gameStore.shootBattle();
-          }}
+          onPress={() => gameStore.shootBattle()}
         />
         <Button
           title="Стріляти холостим"
-          onPress={() => {
-            gameStore.shootBlank();
-          }}
+          onPress={() => gameStore.shootBlank()}
         />
 
         <Text style={styles.probabilityText}>
-          Ймовірність бойового: {gameStore.battleChance.toFixed(2)}%
+          Ймовірність бойового: {gameStore.battleProbability.toFixed(2)}%
         </Text>
         <Text style={styles.probabilityText}>
-          Ймовірність холостого: {(100 - gameStore.battleChance).toFixed(2)}%
+          Ймовірність холостого: {gameStore.blankProbability.toFixed(2)}%
         </Text>
 
         <Text style={styles.historyHeader}>Історія пострілів:</Text>
