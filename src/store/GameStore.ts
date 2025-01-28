@@ -23,12 +23,18 @@ class GameStore {
 
   // Обчислення ймовірності бойового патрона
   get battleProbability(): number {
+    if (this.shotWith100Chance === this.shotCount) {
+      return 100; // Повертаємо 100% ймовірність, якщо поточний постріл має 100% шанс
+    }
     const totalAmmo = this.battleAmmo + this.blankAmmo;
     return totalAmmo > 0 ? (this.battleAmmo / totalAmmo) * 100 : 0;
   }
 
   // Обчислення ймовірності холостого патрона
   get blankProbability(): number {
+    if (this.shotWith100Chance === this.shotCount) {
+      return 100; // Повертаємо 100% ймовірність, якщо поточний постріл має 100% шанс
+    }
     const totalAmmo = this.battleAmmo + this.blankAmmo;
     return totalAmmo > 0 ? (this.blankAmmo / totalAmmo) * 100 : 0;
   }
@@ -43,9 +49,14 @@ class GameStore {
     this.shots.push(`${this.shotCount} - ${shotType}`);
 
     if (isBattle) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy); // Сильна вібрація
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     } else {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Легка вібрація
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    // Після пострілу повертаємо звичайну ймовірність
+    if (this.shotWith100Chance === this.shotCount) {
+      this.shotWith100Chance = null;
     }
   }
 
@@ -59,9 +70,14 @@ class GameStore {
     this.shots.push(`${this.shotCount} - ${shotType}`);
 
     if (this.shotWith100Chance === this.shotCount) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy); // Сильна вібрація
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     } else {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Легка вібрація
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    // Після пострілу повертаємо звичайну ймовірність
+    if (this.shotWith100Chance === this.shotCount) {
+      this.shotWith100Chance = null;
     }
   }
 
@@ -87,6 +103,12 @@ class GameStore {
     if (totalAmmo <= 16) {
       this.blankAmmo = value;
     }
+  }
+
+  // Додати можливість вибору патрона з 100% ймовірністю
+  @action setAmmoWith100Chance(value: number) {
+    this.setBattleAmmoChoice(value);
+    this.setShotWith100Chance(value);
   }
 }
 

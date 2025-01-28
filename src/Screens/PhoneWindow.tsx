@@ -24,6 +24,8 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
   const { styles, theme } = useStyles(stylesheet);
   const [sliderValue, setSliderValue] = useState(selectedAmmo);
   const [ammoType, setAmmoType] = useState<"battle" | "blank">("battle");
+  const [selectedShot, setSelectedShot] = useState<number | null>(null); // Для збереження вибраного пострілу
+  const [is100Chance, setIs100Chance] = useState(false); // Для визначення 100% ймовірності
 
   useEffect(() => {
     if (isVisible) {
@@ -32,22 +34,41 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
   }, [isVisible, selectedAmmo]);
 
   const handleConfirm = () => {
-    if (ammoType === "battle") {
-      gameStore.setBattleAmmoChoice(sliderValue);
-    } else {
-      gameStore.setBattleAmmoChoice(0);
+    if (selectedShot !== null) {
+      // Якщо вибрано постріл з 100% ймовірністю
+      if (ammoType === "battle") {
+        gameStore.setBattleAmmoChoice(sliderValue);
+      } else {
+        gameStore.setBattleAmmoChoice(0);
+      }
+
+      if (is100Chance) {
+        gameStore.setShotWith100Chance(sliderValue); // Встановлюємо ймовірність на 100%
+      }
     }
-    gameStore.setShotWith100Chance(sliderValue);
+
     onClose();
   };
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value);
     onSliderChange(value);
+    // Якщо це вибраний постріл, встановлюємо ймовірність на 100%
+    if (selectedShot === value) {
+      setIs100Chance(true);
+    } else {
+      setIs100Chance(false);
+    }
   };
 
-  const availableAmmo =
-    ammoType === "battle" ? gameStore.battleAmmo : gameStore.blankAmmo;
+  const handleSelectShot = (value: number) => {
+    setSelectedShot(value);
+    // Після вибору пострілу, встановлюємо ймовірність на 100%
+    setIs100Chance(true);
+  };
+
+  // Обчислюємо загальну кількість патронів
+  const totalAmmoCount = gameStore.battleAmmo + gameStore.blankAmmo;
 
   return (
     <Modal
@@ -62,7 +83,7 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
 
           <Slider
             minimumValue={1}
-            maximumValue={availableAmmo}
+            maximumValue={totalAmmoCount}
             step={1}
             value={sliderValue}
             onValueChange={handleSliderChange}
@@ -72,6 +93,10 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
             Постріл № {sliderValue} -{" "}
             {ammoType === "battle" ? "Бойовий" : "Холостий"}
           </Text>
+
+          {is100Chance && (
+            <Text style={styles.modalText}>Ймовірність 100%</Text>
+          )}
 
           <View style={styles.ammoTypeContainer}>
             <TouchableOpacity
@@ -91,6 +116,20 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
               ]}
             >
               <Text style={styles.ammoButtonText}>Холостий</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.selectShotContainer}>
+            <TouchableOpacity
+              onPress={() => handleSelectShot(sliderValue)} // Вибір поточного пострілу
+              style={[
+                styles.selectShotButton,
+                selectedShot === sliderValue && styles.selectedButton,
+              ]}
+            >
+              <Text style={styles.selectShotButtonText}>
+                Вибрати цей постріл
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -174,6 +213,19 @@ const stylesheet = (theme: any) =>
       backgroundColor: theme.colors.selectedButtonBackground,
     },
     ammoButtonText: {
+      color: theme.colors.textPrimary,
+      fontSize: 16,
+    },
+    selectShotContainer: {
+      marginBottom: 20,
+      alignItems: "center",
+    },
+    selectShotButton: {
+      padding: 10,
+      borderRadius: 8,
+      backgroundColor: theme.colors.buttonBackground,
+    },
+    selectShotButtonText: {
       color: theme.colors.textPrimary,
       fontSize: 16,
     },
