@@ -4,9 +4,13 @@ import Slider from "@react-native-community/slider";
 import { observer } from "mobx-react-lite";
 import gameStore from "../store/GameStore";
 import { SliderScreenProps } from "../../types";
-import { useSliderScreenStyles } from "../Styles/useSliderScreenStyles";
+import { useStyles } from "react-native-unistyles";
+import { createStyleSheet } from "react-native-unistyles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const SliderScreen: React.FC<SliderScreenProps> = observer(({ navigation }) => {
+  const { styles, theme } = useStyles(stylesheet);
+
   // Зміна кількості бойових патронів
   const handleCombatAmmoChange = (value: number) => {
     gameStore.setBattleAmmo(value);
@@ -19,7 +23,7 @@ const SliderScreen: React.FC<SliderScreenProps> = observer(({ navigation }) => {
 
   // Почати гру
   const handleStartGame = () => {
-    navigation.navigate("GameScreen", {
+    navigation.replace("GameScreen", {
       combatAmmo: gameStore.battleAmmo,
       blankAmmo: gameStore.blankAmmo,
       selectedHint: null,
@@ -27,10 +31,9 @@ const SliderScreen: React.FC<SliderScreenProps> = observer(({ navigation }) => {
   };
 
   // Використовуємо стилі без теми
-  const styles = useSliderScreenStyles();
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.ammoHeader}>
         Виберіть кількість бойових патронів:
       </Text>
@@ -80,8 +83,44 @@ const SliderScreen: React.FC<SliderScreenProps> = observer(({ navigation }) => {
         ))}
       </View>
       <Button title="Почати гру" onPress={handleStartGame} />
-    </ScrollView>
+    </View>
   );
 });
 
 export default SliderScreen;
+
+const stylesheet = createStyleSheet((theme) => {
+  return {
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.backgroundColor,
+      padding: 20,
+    },
+    ammoHeader: {
+      fontSize: 18,
+      color: theme.colors.textPrimary,
+      marginBottom: 10,
+    },
+    slider: {
+      width: "100%",
+      height: 40,
+      marginBottom: 20,
+      backgroundColor: theme.colors.sliderBackground,
+      borderRadius: 10,
+    },
+    valueText: {
+      fontSize: 16,
+      color: theme.colors.textPrimary,
+    },
+    ammoList: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      marginBottom: 20,
+    },
+    ammoImage: {
+      width: 30,
+      height: 40,
+      margin: 5,
+    },
+  };
+});

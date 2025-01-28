@@ -7,6 +7,7 @@ import { lightTheme, darkTheme } from "./themes";
 interface AppThemeContextProps {
   themeStyles: typeof lightTheme | typeof darkTheme;
   switchTheme: () => void;
+  currentTheme: "light" | "dark";
 }
 
 interface AppThemeProviderProps {
@@ -44,15 +45,14 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   };
 
   return (
-    <UnistylesProvider>
-      <AppThemeContext.Provider
-        value={{
-          themeStyles: currentTheme === "light" ? lightTheme : darkTheme,
-          switchTheme,
-        }}
-      >
-        {children}
-      </AppThemeContext.Provider>
-    </UnistylesProvider>
+    <AppThemeContext.Provider
+      value={{
+        themeStyles: currentTheme === "light" ? lightTheme : darkTheme,
+        switchTheme,
+        currentTheme,
+      }}
+    >
+      {children}
+    </AppThemeContext.Provider>
   );
 };

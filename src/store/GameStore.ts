@@ -2,13 +2,61 @@ import { action, makeObservable, observable } from "mobx";
 import * as Haptics from "expo-haptics";
 
 class GameStore {
-  @observable battleAmmo: number = 1;
-  @observable blankAmmo: number = 1;
+  @observable battleAmmo: number = 5;
+  @observable blankAmmo: number = 3;
   @observable shots: string[] = [];
-  @observable shotCount: number = 1;
+  @observable shotCount: number = 0;
+  @observable customBattleChance: number | null = null;
+  @observable battleAmmoChoice: number | null = null;
 
   constructor() {
     makeObservable(this);
+  }
+
+  get battleChance() {
+    const totalAmmo = this.battleAmmo + this.blankAmmo;
+    return totalAmmo > 0 ? (this.battleAmmo / totalAmmo) * 100 : 0;
+  }
+
+  // Функція для вибору патрона (бойовий або холостий)
+  @action setBattleAmmoChoice(choice: number, ammoType: "battle" | "blank") {
+    this.battleAmmoChoice = choice;
+    this.shots = this.shots.map((shot, index) => {
+      if (index + 1 === choice) {
+        return ammoType === "battle"
+          ? `${index + 1} - Бойовий`
+          : `${index + 1} - Холостий`;
+      }
+      return shot;
+    });
+  }
+
+  // Функція для бойового пострілу
+  @action shootBattle() {
+    if (this.battleAmmo <= 0) return;
+
+    this.battleAmmo--;
+    this.shots.push(`${this.shotCount + 1} - Бойовий`);
+    this.shotCount++;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  }
+
+  // Функція для холостого пострілу
+  @action shootBlank() {
+    if (this.blankAmmo <= 0) return;
+
+    this.blankAmmo--;
+    this.shots.push(`${this.shotCount + 1} - Холостий`);
+    this.shotCount++;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  }
+
+  @action resetGame() {
+    this.battleAmmo = 1;
+    this.blankAmmo = 1;
+    this.shotCount = 0;
+    this.shots = [];
+    this.battleAmmoChoice = null;
   }
 
   @action setBattleAmmo(value: number) {
@@ -25,45 +73,8 @@ class GameStore {
     }
   }
 
-  @action shootBattle() {
-    if (this.battleAmmo > 0) {
-      this.battleAmmo--;
-      this.shots.push(`${this.shotCount} - Бойовий`);
-      this.shotCount++;
-
-      //Сильна вібрація
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    }
-  }
-
-  @action shootBlank() {
-    if (this.blankAmmo > 0) {
-      this.blankAmmo--;
-      this.shots.push(`${this.shotCount} - Холостий`);
-      this.shotCount++;
-
-      //Сильна вібрація
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    }
-  }
-
-  @action resetAmmo(battle: number, blank: number) {
-    this.battleAmmo = battle;
-    this.blankAmmo = blank;
-    this.shots = [];
-    this.shotCount = 1;
-  }
-
-  // Імовірність наступного бойового пострілу
-  get battleChance() {
-    const totalAmmo = this.battleAmmo + this.blankAmmo;
-    return totalAmmo > 0 ? (this.battleAmmo / totalAmmo) * 100 : 0;
-  }
-
-  // Імовірність наступного холостого пострілу
-  get blankChance() {
-    const totalAmmo = this.battleAmmo + this.blankAmmo;
-    return totalAmmo > 0 ? (this.blankAmmo / totalAmmo) * 100 : 0;
+  @action setBattleChance(chance: number) {
+    this.customBattleChance = chance;
   }
 }
 

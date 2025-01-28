@@ -2,7 +2,10 @@ import React from "react";
 import { View, Text, Button, TouchableOpacity, ScrollView } from "react-native";
 import { observer } from "mobx-react-lite";
 import { HintsScreenProps } from "../../types";
-import { useHintsScreenStyles } from "../Styles/useHintScreenStyles";
+
+import { useAppTheme } from "../Styles/ThemeContext";
+import { useStyles } from "react-native-unistyles";
+import { createStyleSheet } from "react-native-unistyles";
 
 const hints = [
   {
@@ -39,6 +42,8 @@ const hints = [
 const HintsScreen: React.FC<HintsScreenProps> = ({ navigation, route }) => {
   const { onUseHint } = route.params;
 
+  const { styles, theme } = useStyles(stylesheet);
+
   const handleUseHint = (hintName: string) => {
     if (onUseHint) {
       onUseHint(hintName);
@@ -46,10 +51,8 @@ const HintsScreen: React.FC<HintsScreenProps> = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  const styles = useHintsScreenStyles();
-
   return (
-    <ScrollView>
+    <ScrollView style={styles.container}>
       <View style={styles.container}>
         <Text style={styles.title}>Підказки:</Text>
         {hints.map((hint) => (
@@ -70,3 +73,56 @@ const HintsScreen: React.FC<HintsScreenProps> = ({ navigation, route }) => {
 };
 
 export default observer(HintsScreen);
+
+const stylesheet = createStyleSheet((theme) => {
+  return {
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.backgroundColor,
+      padding: 20,
+    },
+    title: {
+      fontSize: 24,
+      color: theme.colors.textPrimary,
+      marginBottom: 20,
+      fontWeight: "bold",
+      textAlign: "center",
+    },
+    hintContainer: {
+      backgroundColor: theme.colors.hintContainer,
+      padding: 20,
+      borderRadius: 12,
+      marginBottom: 15,
+      width: "100%",
+      alignSelf: "center",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 6,
+      elevation: 3,
+    },
+    hintName: {
+      fontSize: 18,
+      color: theme.colors.textPrimary,
+      fontWeight: "bold",
+      marginBottom: 10,
+    },
+    hintDescription: {
+      fontSize: 16,
+      color: theme.colors.textSecondary,
+      marginBottom: 15,
+    },
+    hintButton: {
+      backgroundColor: theme.colors.hintButton,
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    hintButtonText: {
+      color: theme.colors.textPrimary,
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+  };
+});

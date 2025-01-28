@@ -1,10 +1,20 @@
 import React, { useState } from "react";
-import { View, Text, Button, Alert, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  Alert,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import { observer } from "mobx-react-lite";
 import gameStore from "../store/GameStore";
 import { GameScreenProps } from "../../types";
-
-import { useGameScreenStyles } from "../Styles/useGameScreenStyles";
+import { useStyles } from "react-native-unistyles";
+import { createStyleSheet } from "react-native-unistyles";
+import { Ionicons } from "@expo/vector-icons";
+import PhoneWindow from "./PhoneWindow";
 
 const GameScreen: React.FC<GameScreenProps> = observer(
   ({ navigation, route }) => {
@@ -12,6 +22,7 @@ const GameScreen: React.FC<GameScreenProps> = observer(
       route.params?.selectedHint || null
     );
     const [usedHints, setUsedHints] = useState<string[]>([]);
+    const [isModalVisible, setIsModalVisible] = useState(false); // Для відображення модального вікна слайдера
 
     const addHint = (hint: string) => {
       if (!usedHints.includes(hint)) {
@@ -23,8 +34,27 @@ const GameScreen: React.FC<GameScreenProps> = observer(
       setSelectedHint(null);
     };
 
-    // Отримуємо стилі за допомогою useGameScreenStyles
-    const styles = useGameScreenStyles();
+    const handlePhoneButton = () => {
+      // Відкриваємо слайдер
+      setIsModalVisible(true);
+    };
+
+    const handleSliderChange = (value: number) => {
+      console.log("Slider value:", value); // Лог значення
+      gameStore.setBattleAmmoChoice(Math.round(value), "battle"); // Обираємо патрон через gameStore
+    };
+
+    const handleConfirmSelection = () => {
+      // Використовуємо метод для зміни battleChance
+      gameStore.setBattleChance(100); // Тепер можна змінювати через метод
+      Alert.alert(
+        "Телефон",
+        `Патрон ${gameStore.battleAmmoChoice} буде бойовим!`
+      );
+      setIsModalVisible(false);
+    };
+
+    const { styles, theme } = useStyles(stylesheet);
 
     return (
       <ScrollView contentContainerStyle={styles.container}>
@@ -54,18 +84,22 @@ const GameScreen: React.FC<GameScreenProps> = observer(
 
         <Button
           title="Стріляти бойовим"
-          onPress={() => gameStore.shootBattle()}
+          onPress={() => {
+            gameStore.shootBattle();
+          }}
         />
         <Button
           title="Стріляти холостим"
-          onPress={() => gameStore.shootBlank()}
+          onPress={() => {
+            gameStore.shootBlank();
+          }}
         />
 
         <Text style={styles.probabilityText}>
           Ймовірність бойового: {gameStore.battleChance.toFixed(2)}%
         </Text>
         <Text style={styles.probabilityText}>
-          Ймовірність холостого: {gameStore.blankChance.toFixed(2)}%
+          Ймовірність холостого: {(100 - gameStore.battleChance).toFixed(2)}%
         </Text>
 
         <Text style={styles.historyHeader}>Історія пострілів:</Text>
@@ -99,9 +133,88 @@ const GameScreen: React.FC<GameScreenProps> = observer(
             })
           }
         />
+
+        {/* Кнопка Телефон */}
+        <TouchableOpacity
+          onPress={handlePhoneButton}
+          style={styles.phoneButton}
+        >
+          <Ionicons name="call" size={30} color={theme.colors.textPrimary} />
+          <Text style={styles.phoneButtonText}>Телефон</Text>
+        </TouchableOpacity>
+
+        <PhoneWindow
+          isVisible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          onConfirm={handleConfirmSelection}
+          totalAmmo={gameStore.battleAmmo}
+          selectedAmmo={gameStore.battleAmmoChoice || 0}
+          onSliderChange={handleSliderChange}
+        />
       </ScrollView>
     );
   }
 );
 
 export default GameScreen;
+
+const stylesheet = createStyleSheet((theme) => {
+  return {
+    container: {
+      padding: 20,
+      flexGrow: 1,
+      justifyContent: "flex-start",
+      backgroundColor: theme.colors.backgroundColor,
+    },
+    ammoHeader: {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginVertical: 10,
+      color: theme.colors.textPrimary,
+    },
+    ammoList: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      marginBottom: 20,
+    },
+    ammoImage: {
+      width: 30,
+      height: 30,
+      margin: 5,
+    },
+    probabilityText: {
+      fontSize: 16,
+      marginBottom: 10,
+      color: theme.colors.textSecondary,
+    },
+    historyHeader: {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginVertical: 10,
+      color: theme.colors.textPrimary,
+    },
+    shotText: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+    },
+    selectedHint: {
+      fontSize: 16,
+      fontWeight: "bold",
+      marginVertical: 10,
+      color: theme.colors.textSecondary,
+    },
+    phoneButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 10,
+      backgroundColor: theme.colors.hintButton,
+      borderRadius: 8,
+      marginTop: 20,
+    },
+    phoneButtonText: {
+      marginLeft: 10,
+      fontSize: 16,
+      color: theme.colors.textPrimary,
+    },
+  };
+});
