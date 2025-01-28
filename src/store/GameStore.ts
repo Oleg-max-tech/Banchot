@@ -24,7 +24,7 @@ class GameStore {
   // Обчислення ймовірності бойового патрона
   get battleProbability(): number {
     if (this.shotWith100Chance === this.shotCount) {
-      return 100; // Повертаємо 100% ймовірність, якщо поточний постріл має 100% шанс
+      return 100;
     }
     const totalAmmo = this.battleAmmo + this.blankAmmo;
     return totalAmmo > 0 ? (this.battleAmmo / totalAmmo) * 100 : 0;
@@ -33,7 +33,7 @@ class GameStore {
   // Обчислення ймовірності холостого патрона
   get blankProbability(): number {
     if (this.shotWith100Chance === this.shotCount) {
-      return 100; // Повертаємо 100% ймовірність, якщо поточний постріл має 100% шанс
+      return 100;
     }
     const totalAmmo = this.battleAmmo + this.blankAmmo;
     return totalAmmo > 0 ? (this.blankAmmo / totalAmmo) * 100 : 0;

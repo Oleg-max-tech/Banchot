@@ -24,8 +24,8 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
   const { styles, theme } = useStyles(stylesheet);
   const [sliderValue, setSliderValue] = useState(selectedAmmo);
   const [ammoType, setAmmoType] = useState<"battle" | "blank">("battle");
-  const [selectedShot, setSelectedShot] = useState<number | null>(null); // Для збереження вибраного пострілу
-  const [is100Chance, setIs100Chance] = useState(false); // Для визначення 100% ймовірності
+  const [selectedShot, setSelectedShot] = useState<number | null>(null);
+  const [is100Chance, setIs100Chance] = useState(false);
 
   useEffect(() => {
     if (isVisible) {
