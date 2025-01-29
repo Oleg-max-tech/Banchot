@@ -47,12 +47,7 @@ class GameStore {
     const isBattle = this.shotWith100Chance === this.shotCount;
     const shotType = isBattle ? "Бойовий" : "Холостий";
     this.shots.push(`${this.shotCount} - ${shotType}`);
-
-    if (isBattle) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    } else {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
     // Після пострілу повертаємо звичайну ймовірність
     if (this.shotWith100Chance === this.shotCount) {
@@ -69,11 +64,7 @@ class GameStore {
       this.shotWith100Chance === this.shotCount ? "Бойовий" : "Холостий";
     this.shots.push(`${this.shotCount} - ${shotType}`);
 
-    if (this.shotWith100Chance === this.shotCount) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    } else {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
     // Після пострілу повертаємо звичайну ймовірність
     if (this.shotWith100Chance === this.shotCount) {
