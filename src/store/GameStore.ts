@@ -105,7 +105,7 @@ class GameStore {
     }
   }
 
-  // Додати можливість вибору патрона з 100% ймовірністю
+  // Можливість вибору патрона з 100% ймовірністю
   @action setAmmoWith100Chance(value: number) {
     this.setBattleAmmoChoice(value);
     this.setShotWith100Chance(value);

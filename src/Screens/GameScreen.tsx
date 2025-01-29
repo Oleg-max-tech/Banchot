@@ -23,8 +23,8 @@ const GameScreen: React.FC<GameScreenProps> = observer(
     );
     const [usedHints, setUsedHints] = useState<string[]>([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [ammoType, setAmmoType] = useState<"battle" | "blank">("battle");
-    const [sliderValue, setSliderValue] = useState<number>(0);
+    const [ammoType, setAmmoType] = useState<"battle" | "blank">("battle"); // Тип патронів
+    const [sliderValue, setSliderValue] = useState<number>(0); // Значення слайдера
 
     const addHint = (hint: string) => {
       if (!usedHints.includes(hint)) {
@@ -54,11 +54,11 @@ const GameScreen: React.FC<GameScreenProps> = observer(
 
     const onSliderChange = (value: number) => {
       console.log("Значення слайдера: ", value);
+      // Додаткове опрацювання зміни значення
     };
 
     const handleConfirmSelection = () => {
       gameStore.setShotWith100Chance(gameStore.shotCount);
-      Alert.alert("Телефон", `Патрон ${gameStore.battleAmmo} буде бойовим!`);
       setIsModalVisible(false);
     };
 

@@ -75,7 +75,7 @@ const AppContent: React.FC = () => {
                   backgroundColor: theme.colors.backgroundColor,
                   borderBottomColor: theme.colors.backgroundColor,
                 },
-                headerRight: null,
+                headerRight: undefined,
                 presentation: "modal",
               };
             }}
