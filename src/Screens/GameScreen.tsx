@@ -59,6 +59,7 @@ const GameScreen: React.FC<GameScreenProps> = observer(
 
     const handleConfirmSelection = () => {
       gameStore.setShotWith100Chance(gameStore.shotCount);
+      Alert.alert("Телефон", `Патрон ${gameStore.battleAmmo} буде бойовим!`);
       setIsModalVisible(false);
     };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
 import Slider from "@react-native-community/slider";
-import { useStyles } from "react-native-unistyles";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
 import gameStore from "../store/GameStore";
 
 interface PhoneWindowProps {
@@ -150,7 +150,7 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
 
 export default PhoneWindow;
 
-const stylesheet = (theme: any) =>
+const stylesheet = createStyleSheet((theme: any) =>
   StyleSheet.create({
     modalContainer: {
       flex: 1,
@@ -229,4 +229,5 @@ const stylesheet = (theme: any) =>
       color: theme.colors.textPrimary,
       fontSize: 16,
     },
-  });
+  })
+);
