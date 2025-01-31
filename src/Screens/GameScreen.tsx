@@ -23,8 +23,6 @@ const GameScreen: React.FC<GameScreenProps> = observer(
     );
     const [usedHints, setUsedHints] = useState<string[]>([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [ammoType, setAmmoType] = useState<"battle" | "blank">("battle"); // Тип патронів
-    const [sliderValue, setSliderValue] = useState<number>(0); // Значення слайдера
 
     const addHint = (hint: string) => {
       if (!usedHints.includes(hint)) {
@@ -38,29 +36,6 @@ const GameScreen: React.FC<GameScreenProps> = observer(
 
     const handlePhoneButton = () => {
       setIsModalVisible(true);
-    };
-
-    const handleSliderChange = (value: number) => {
-      if (ammoType === "battle" && value > gameStore.battleAmmo) {
-        value = gameStore.battleAmmo;
-      }
-      if (ammoType === "blank" && value > gameStore.blankAmmo) {
-        value = gameStore.blankAmmo;
-      }
-
-      setSliderValue(value);
-      onSliderChange(value);
-    };
-
-    const onSliderChange = (value: number) => {
-      console.log("Значення слайдера: ", value);
-      // Додаткове опрацювання зміни значення
-    };
-
-    const handleConfirmSelection = () => {
-      gameStore.setShotWith100Chance(gameStore.shotCount);
-      Alert.alert("Телефон", `Патрон ${gameStore.battleAmmo} буде бойовим!`);
-      setIsModalVisible(false);
     };
 
     const { styles, theme } = useStyles(stylesheet);
@@ -93,18 +68,18 @@ const GameScreen: React.FC<GameScreenProps> = observer(
 
         <Button
           title="Стріляти бойовим"
-          onPress={() => gameStore.shootBattle()}
+          onPress={() => gameStore.shoot("battle")}
         />
         <Button
           title="Стріляти холостим"
-          onPress={() => gameStore.shootBlank()}
+          onPress={() => gameStore.shoot("blank")}
         />
 
         <Text style={styles.probabilityText}>
-          Ймовірність бойового: {gameStore.battleProbability.toFixed(2)}%
+          Ймовірність бойового: {gameStore.ammoProbanility.battle.toFixed(2)}%
         </Text>
         <Text style={styles.probabilityText}>
-          Ймовірність холостого: {gameStore.blankProbability.toFixed(2)}%
+          Ймовірність холостого: {gameStore.ammoProbanility.blank.toFixed(2)}%
         </Text>
 
         <Text style={styles.historyHeader}>Історія пострілів:</Text>
@@ -151,10 +126,6 @@ const GameScreen: React.FC<GameScreenProps> = observer(
         <PhoneWindow
           isVisible={isModalVisible}
           onClose={() => setIsModalVisible(false)}
-          onConfirm={handleConfirmSelection}
-          totalAmmo={gameStore.battleAmmo}
-          selectedAmmo={gameStore.battleAmmoChoice || 0}
-          onSliderChange={handleSliderChange}
         />
       </ScrollView>
     );

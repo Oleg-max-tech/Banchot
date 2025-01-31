@@ -7,68 +7,29 @@ import gameStore from "../store/GameStore";
 interface PhoneWindowProps {
   isVisible: boolean;
   onClose: () => void;
-  onConfirm: (ammo: number, ammoType: "battle" | "blank") => void;
-  totalAmmo: number;
-  selectedAmmo: number;
-  onSliderChange: (value: number) => void;
 }
 
-const PhoneWindow: React.FC<PhoneWindowProps> = ({
-  isVisible,
-  onClose,
-  onConfirm,
-  totalAmmo,
-  selectedAmmo,
-  onSliderChange,
-}) => {
+const PhoneWindow: React.FC<PhoneWindowProps> = ({ isVisible, onClose }) => {
   const { styles, theme } = useStyles(stylesheet);
+
+  const selectedAmmo = gameStore.battleAmmoChoice || 0;
+
   const [sliderValue, setSliderValue] = useState(selectedAmmo);
   const [ammoType, setAmmoType] = useState<"battle" | "blank">("battle");
-  const [selectedShot, setSelectedShot] = useState<number | null>(null);
-  const [is100Chance, setIs100Chance] = useState(false);
-
-  useEffect(() => {
-    if (isVisible) {
-      setSliderValue(selectedAmmo);
-    }
-  }, [isVisible, selectedAmmo]);
 
   const handleConfirm = () => {
-    if (selectedShot !== null) {
-      // Якщо вибрано постріл з 100% ймовірністю
-      if (ammoType === "battle") {
-        gameStore.setBattleAmmoChoice(sliderValue);
-      } else {
-        gameStore.setBattleAmmoChoice(0);
-      }
-
-      if (is100Chance) {
-        gameStore.setShotWith100Chance(sliderValue); // Встановлюємо ймовірність на 100%
-      }
-    }
-
     onClose();
+    gameStore.addKnownFutureShot({
+      type: ammoType,
+      index: gameStore.shotCount + sliderValue,
+    });
   };
+
+  const totalAmmoCount = gameStore.battleAmmo + gameStore.blankAmmo;
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value);
-    onSliderChange(value);
-    // Якщо це вибраний постріл, встановлюємо ймовірність на 100%
-    if (selectedShot === value) {
-      setIs100Chance(true);
-    } else {
-      setIs100Chance(false);
-    }
   };
-
-  const handleSelectShot = (value: number) => {
-    setSelectedShot(value);
-    // Після вибору пострілу, встановлюємо ймовірність на 100%
-    setIs100Chance(true);
-  };
-
-  // Обчислюємо загальну кількість патронів
-  const totalAmmoCount = gameStore.battleAmmo + gameStore.blankAmmo;
 
   return (
     <Modal
@@ -94,10 +55,6 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
             {ammoType === "battle" ? "Бойовий" : "Холостий"}
           </Text>
 
-          {is100Chance && (
-            <Text style={styles.modalText}>Ймовірність 100%</Text>
-          )}
-
           <View style={styles.ammoTypeContainer}>
             <TouchableOpacity
               onPress={() => setAmmoType("battle")}
@@ -116,20 +73,6 @@ const PhoneWindow: React.FC<PhoneWindowProps> = ({
               ]}
             >
               <Text style={styles.ammoButtonText}>Холостий</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.selectShotContainer}>
-            <TouchableOpacity
-              onPress={() => handleSelectShot(sliderValue)} // Вибір поточного пострілу
-              style={[
-                styles.selectShotButton,
-                selectedShot === sliderValue && styles.selectedButton,
-              ]}
-            >
-              <Text style={styles.selectShotButtonText}>
-                Вибрати цей постріл
-              </Text>
             </TouchableOpacity>
           </View>
 

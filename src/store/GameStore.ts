@@ -1,75 +1,65 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import * as Haptics from "expo-haptics";
 
+interface FutureShot {
+  index: number;
+  type: "battle" | "blank";
+}
+
+interface AmmoProbability {
+  battle: number;
+  blank: number;
+}
+
 class GameStore {
-  @observable battleAmmo: number = 0;
-  @observable blankAmmo: number = 0;
-  @observable battleAmmoChoice: number = 0;
-  @observable shots: string[] = [];
-  @observable shotCount: number = 0;
-  @observable shotWith100Chance: number | null = null;
+  @observable battleAmmo: number = 1; // Кількість бойових патронів
+  @observable blankAmmo: number = 1; // Кількість холостих патронів
+  @observable shotCount: number = 1; // Лічильник пострілів
+  @observable shots: string[] = []; // Список пострілів
+  @observable knownFutureShots: FutureShot[] = [];
 
   constructor() {
     makeObservable(this);
   }
 
-  @action setBattleAmmoChoice(value: number) {
-    this.battleAmmoChoice = value;
+  @action addKnownFutureShot(shot: FutureShot) {
+    this.knownFutureShots.push(shot);
   }
 
-  @action setShotWith100Chance(shotNumber: number) {
-    this.shotWith100Chance = shotNumber;
-  }
-
-  // Обчислення ймовірності бойового патрона
-  get battleProbability(): number {
-    if (this.shotWith100Chance === this.shotCount) {
-      return 100;
-    }
+  @computed get ammoProbanility(): AmmoProbability {
     const totalAmmo = this.battleAmmo + this.blankAmmo;
-    return totalAmmo > 0 ? (this.battleAmmo / totalAmmo) * 100 : 0;
-  }
 
-  // Обчислення ймовірності холостого патрона
-  get blankProbability(): number {
-    if (this.shotWith100Chance === this.shotCount) {
-      return 100;
+    const knownFutureShot = this.knownFutureShots.find(
+      (shot) => shot.index - 1 === this.shotCount
+    );
+
+    if (knownFutureShot) {
+      return {
+        battle: knownFutureShot.type === "battle" ? 100 : 0,
+        blank: knownFutureShot.type === "blank" ? 100 : 0,
+      };
     }
-    const totalAmmo = this.battleAmmo + this.blankAmmo;
-    return totalAmmo > 0 ? (this.blankAmmo / totalAmmo) * 100 : 0;
+
+    return {
+      battle: totalAmmo > 0 ? (this.battleAmmo / totalAmmo) * 100 : 0,
+      blank: totalAmmo > 0 ? (this.blankAmmo / totalAmmo) * 100 : 0,
+    };
   }
 
-  @action shootBattle() {
-    if (this.battleAmmo <= 0) return;
+  @action shoot(type: "battle" | "blank") {
+    if (this.battleAmmo <= 0 && this.blankAmmo <= 0) return;
 
-    this.battleAmmo--;
-    this.shotCount++;
-    const isBattle = this.shotWith100Chance === this.shotCount;
-    const shotType = isBattle ? "Бойовий" : "Холостий";
-    this.shots.push(`${this.shotCount} - ${shotType}`);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-
-    // Після пострілу повертаємо звичайну ймовірність
-    if (this.shotWith100Chance === this.shotCount) {
-      this.shotWith100Chance = null;
+    if (type === "battle") {
+      this.battleAmmo--;
+    } else {
+      this.blankAmmo--;
     }
-  }
 
-  @action shootBlank() {
-    if (this.blankAmmo <= 0) return;
-
-    this.blankAmmo--;
-    this.shotCount++;
-    const shotType =
-      this.shotWith100Chance === this.shotCount ? "Бойовий" : "Холостий";
+    const shotType = type === "battle" ? "Бойовий" : "Холостий";
     this.shots.push(`${this.shotCount} - ${shotType}`);
+    this.shotCount++;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-
-    // Після пострілу повертаємо звичайну ймовірність
-    if (this.shotWith100Chance === this.shotCount) {
-      this.shotWith100Chance = null;
-    }
   }
 
   @action resetGame() {
@@ -77,29 +67,20 @@ class GameStore {
     this.blankAmmo = 1;
     this.shotCount = 0;
     this.shots = [];
-    this.shotWith100Chance = null;
-    this.battleAmmoChoice = 0;
-  }
-
-  @action setBattleAmmo(value: number) {
-    const totalAmmo = value + this.blankAmmo;
-    if (totalAmmo <= 16) {
-      // Максимальна кількість патронів
-      this.battleAmmo = value;
-    }
-  }
-
-  @action setBlankAmmo(value: number) {
-    const totalAmmo = value + this.battleAmmo;
-    if (totalAmmo <= 16) {
-      this.blankAmmo = value;
-    }
   }
 
   // Можливість вибору патрона з 100% ймовірністю
-  @action setAmmoWith100Chance(value: number) {
-    this.setBattleAmmoChoice(value);
-    this.setShotWith100Chance(value);
+  @action setAmmo(value: number, type: "battle" | "blank") {
+    switch (type) {
+      case "battle": {
+        this.battleAmmo = value;
+        return;
+      }
+      case "blank": {
+        this.blankAmmo = value;
+        return;
+      }
+    }
   }
 }
 

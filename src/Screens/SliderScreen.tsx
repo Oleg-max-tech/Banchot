@@ -6,19 +6,18 @@ import gameStore from "../store/GameStore";
 import { SliderScreenProps } from "../../types";
 import { useStyles } from "react-native-unistyles";
 import { createStyleSheet } from "react-native-unistyles";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const SliderScreen: React.FC<SliderScreenProps> = observer(({ navigation }) => {
   const { styles, theme } = useStyles(stylesheet);
 
   // Зміна кількості бойових патронів
   const handleCombatAmmoChange = (value: number) => {
-    gameStore.setBattleAmmo(value);
+    gameStore.setAmmo(value, "battle");
   };
 
   // Зміна кількості холостих патронів
   const handleBlankAmmoChange = (value: number) => {
-    gameStore.setBlankAmmo(value);
+    gameStore.setAmmo(value, "blank");
   };
 
   // Почати гру
